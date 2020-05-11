@@ -5,6 +5,6 @@ namespace CustomTrackerBackend.Models
 {
     public class User : IdentityUser
     {
-        public ICollection<Issue> Issues { get; set; }
+        public List<Issue> Issues { get; set; }
     }
 }
