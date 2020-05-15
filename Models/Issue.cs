@@ -8,8 +8,8 @@ namespace CustomTrackerBackend.Models
         public string Name { get; set; }
         public bool IsComplete { get; set; }
 
-        [ForeignKey("UserName")]
-        public string UserName { get; set; }
+        [ForeignKey("UserId")]
+        public string UserId { get; set; }
         public User User { get; set; }
     }
 }

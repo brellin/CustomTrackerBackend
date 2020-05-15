@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using CustomTrackerBackend.Models;
 using Microsoft.OpenApi.Models;
+
 
 namespace CustomTrackerBackend
 {
@@ -16,13 +18,24 @@ namespace CustomTrackerBackend
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        internal static IConfiguration Configuration { get; private set; }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddDbContext<UserContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
-            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "Custom Tracker Backend", Version = "v1" }));
+            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Custom Tracker Backend",
+                Version = "v1",
+                Description = "Backend for Custom Tracker",
+                License = new OpenApiLicense
+                {
+                    Name = "Using MIT Open Source License",
+                    Url = new Uri("https://opensource.org/licenses/MIT"),
+                }
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +57,8 @@ namespace CustomTrackerBackend
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
