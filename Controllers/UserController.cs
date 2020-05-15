@@ -17,48 +17,48 @@ namespace CustomTrackerBackend.Controllers
     {
         private UserManager<User> userManager;
         private SignInManager<User> signInManager;
-        private RoleManager<IdentityRole> roleManager;
 
-        public UserController(UserManager<User> _userManager, SignInManager<User> _signInManager, RoleManager<IdentityRole> _roleManager)
+        public UserController(UserManager<User> _userManager, SignInManager<User> _signInManager)
         {
             userManager = _userManager;
             signInManager = _signInManager;
-            roleManager = _roleManager;
-        }
-
-        private async Task<Tuple<IList<string>, User>> TokenizeUser(string username)
-        {
-            User user = await userManager.FindByNameAsync(username);
-            IList<string> roles = await userManager.GetRolesAsync(user);
-            return new Tuple<IList<string>, User>(roles, user);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] RegisterInput input)
+        public async Task<IActionResult> Register([FromBody] LoginInput input)
         {
             if (ModelState.IsValid)
             {
                 User newUser = new User { UserName = input.Username };
 
-                foreach (string role in input.Roles)
-                {
-                    if (!await roleManager.RoleExistsAsync(role))
-                        return BadRequest(new { error = $"Invalid role \"{role}\"" });
-                };
                 IdentityResult addUser = await userManager.CreateAsync(newUser, input.Password);
                 if (addUser.Succeeded)
                 {
-                    IdentityResult addRoles = await userManager.AddToRolesAsync(newUser, input.Roles);
-                    await signInManager.SignInAsync(newUser, false);
-                    Tuple<IList<string>, User> userWithRoles = await TokenizeUser(input.Username);
-                    string token = TokenManager.GenerateToken(userWithRoles);
+                    User user = await userManager.FindByNameAsync(input.Username);
+                    await signInManager.SignInAsync(user, false);
+                    string token = TokenManager.GenerateToken(user);
                     return CreatedAtAction(nameof(Register), new { id = newUser.Id }, new { id = newUser.Id, token = token });
                 }
-                else
+                foreach (var error in addUser.Errors) ModelState.AddModelError(error.Code, error.Description);
+                return ValidationProblem(ModelState);
+            }
+            return UnprocessableEntity(ModelState);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody] LoginInput input)
+        {
+            if (ModelState.IsValid)
+            {
+                Microsoft.AspNetCore.Identity.SignInResult logInUser = await signInManager.PasswordSignInAsync(input.Username, input.Password, false, false);
+
+                if (logInUser.Succeeded)
                 {
-                    foreach (var error in addUser.Errors) ModelState.AddModelError(error.Code, error.Description);
-                    return ValidationProblem(ModelState);
+                    User user = await userManager.FindByNameAsync(input.Username);
+                    string token = TokenManager.GenerateToken(user);
+                    return Ok(new { token = token });
                 }
+                return ValidationProblem($"Sign in with user \"{input.Username}\" failed");
             }
             return UnprocessableEntity(ModelState);
         }

@@ -1,9 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CustomTrackerBackend.Models.Inputs
 {
-    public class RegisterInput
+    public class LoginInput
     {
+        [Required]
         public string Username { get; set; }
+        [Required]
         public string Password { get; set; }
-        public string[] Roles { get; set; }
     }
 }

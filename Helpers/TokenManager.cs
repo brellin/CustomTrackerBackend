@@ -15,11 +15,11 @@ namespace CustomTrackerBackend.Helpers
     {
         public TokenManager() { }
 
-        public static string GenerateToken(Tuple<IList<string>, User> user)
+        public static string GenerateToken(User user)
         {
-            ClaimsIdentity claims = new ClaimsIdentity(user.Item1.Select(role => new Claim(ClaimTypes.Role, role)));
-            claims.AddClaim(new Claim(ClaimTypes.Email, user.Item2.Email));
-            claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Item2.Id));
+            ClaimsIdentity claims = new ClaimsIdentity();
+            claims.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
+            claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
             JwtSecurityToken token = new JwtSecurityToken
             (
@@ -27,7 +27,7 @@ namespace CustomTrackerBackend.Helpers
                 claims: claims.Claims,
                 notBefore: DateTime.Now,
                 expires: DateTime.Now.AddDays(30),
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Startup.Configuration["Key"])), SecurityAlgorithms.HmacSha256)
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Startup.Configuration["SiteKey"])), SecurityAlgorithms.HmacSha256)
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
