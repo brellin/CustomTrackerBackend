@@ -23,7 +23,7 @@ namespace CustomTrackerBackend.Helpers
 
             JwtSecurityToken token = new JwtSecurityToken
             (
-                issuer: Startup.Configuration["Host"],
+                issuer: Startup.Configuration["PG:Host"],
                 claims: claims.Claims,
                 notBefore: DateTime.Now,
                 expires: DateTime.Now.AddDays(30),

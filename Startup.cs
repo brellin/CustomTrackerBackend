@@ -84,7 +84,7 @@ namespace CustomTrackerBackend
                     options.SaveToken = true;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidIssuer = env.ContentRootPath,
+                        ValidIssuer = Configuration["PG:Host"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["SiteKey"])),
                         ValidateAudience = false
                     };

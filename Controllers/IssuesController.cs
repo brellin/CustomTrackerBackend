@@ -4,25 +4,34 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CustomTrackerBackend.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace CustomTrackerBackend
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class IssueController : ControllerBase
+    public class IssuesController : ControllerBase
     {
         private readonly UserContext _context;
+        private UserManager<User> userManager;
 
-        public IssueController(UserContext context)
+        public IssuesController(UserContext context, UserManager<User> _userManager)
         {
             _context = context;
+            userManager = _userManager;
         }
 
-        // GET: api/Issue
+        // GET: api/Issues
+        [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Issue>>> GetIssues()
+        public async Task<ActionResult<Issue>> GetIssues()
         {
-            return await _context.Issues.ToListAsync();
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            IEnumerable<Issue> userIssues = await _context.Issues.Where(i => i.UserId == userId).ToListAsync();
+            if (userIssues.Count() < 1) return NotFound("Good request, but no issues found.");
+            return Ok(userIssues);
         }
 
         // GET: api/Issue/5
