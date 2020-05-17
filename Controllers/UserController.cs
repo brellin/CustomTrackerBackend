@@ -1,18 +1,16 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using CustomTrackerBackend.Models;
 using CustomTrackerBackend.Helpers;
 using CustomTrackerBackend.Models.Inputs;
-using System;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace CustomTrackerBackend.Controllers
 {
     [ApiController]
-    [Route("[action]")]
+    [Route("/auth")]
     public class UserController : ControllerBase
     {
         private UserManager<User> userManager;
@@ -25,6 +23,7 @@ namespace CustomTrackerBackend.Controllers
         }
 
         [HttpPost]
+        [Route("/Register")]
         public async Task<IActionResult> Register([FromBody] LoginInput input)
         {
             if (ModelState.IsValid)
@@ -46,6 +45,7 @@ namespace CustomTrackerBackend.Controllers
         }
 
         [HttpPost]
+        [Route("/Login")]
         public async Task<IActionResult> Login([FromBody] LoginInput input)
         {
             if (ModelState.IsValid)
@@ -61,6 +61,13 @@ namespace CustomTrackerBackend.Controllers
                 return ValidationProblem($"Sign in with user \"{input.Username}\" failed");
             }
             return UnprocessableEntity(ModelState);
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetUser()
+        {
+            return Ok(await userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)));
         }
 
     }
