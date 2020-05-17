@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace CustomTrackerBackend.Models
 {
@@ -11,9 +12,8 @@ namespace CustomTrackerBackend.Models
         [Required]
         public bool IsComplete { get; set; }
 
-        [Required]
-        [ForeignKey("UserId")]
+        [JsonIgnore, Newtonsoft.Json.JsonIgnore]
         public string UserId { get; set; }
-        public User User { get; set; }
+        public virtual User User { get; set; }
     }
 }

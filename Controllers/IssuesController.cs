@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -26,13 +25,18 @@ namespace CustomTrackerBackend
         // GET: api/Issues
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Issue>>> GetIssues()
+        public async Task<ActionResult> GetIssues()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            IEnumerable<Issue> userIssues = await _context.Issues.Where(i => i.UserId == userId).ToListAsync();
+            var userIssues = _context.Issues
+                .Include(i => i.User)
+                .AsEnumerable()
+                .Where(i => i.User.Id == userId);
 
             if (userIssues.Count() < 1) return NotFound(new { message = "Good request, but no issues found" });
+
+            await Task.Delay(500);
 
             return Ok(new { issues = userIssues });
         }
@@ -42,7 +46,7 @@ namespace CustomTrackerBackend
         [HttpGet("{id}")]
         public async Task<ActionResult<Issue>> GetIssue(long id)
         {
-            Issue issue = await _context.Issues.FindAsync(id);
+            Issue issue = await _context.Issues.Include(i => i.User).FirstAsync(i => i.Id == id);
 
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -84,6 +88,7 @@ namespace CustomTrackerBackend
         [HttpPost]
         public async Task<ActionResult<Issue>> PostIssue(Issue issue)
         {
+            issue.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             _context.Issues.Add(issue);
             await _context.SaveChangesAsync();
 

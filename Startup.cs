@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
 using Npgsql;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 namespace CustomTrackerBackend
 {
@@ -53,7 +54,10 @@ namespace CustomTrackerBackend
             services.AddCors();
             services.AddHttpContextAccessor();
             services.AddDbContext<UserContext>(options => options.UseNpgsql(pgConnection).UseSnakeCaseNamingConvention());
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson(options =>
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                );
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "Custom Tracker Backend",

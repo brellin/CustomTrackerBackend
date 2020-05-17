@@ -22,7 +22,6 @@ namespace CustomTrackerBackend.Models
                 .Ignore(f => f.PhoneNumberConfirmed)
                 .Ignore(f => f.SecurityStamp)
                 .Ignore(f => f.TwoFactorEnabled);
-
             modelBuilder.Entity<Issue>()
                 .HasOne(i => i.User)
                 .WithMany(u => u.Issues)

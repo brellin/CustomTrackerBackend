@@ -6,6 +6,8 @@ using CustomTrackerBackend.Helpers;
 using CustomTrackerBackend.Models.Inputs;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace CustomTrackerBackend.Controllers
 {
@@ -15,11 +17,13 @@ namespace CustomTrackerBackend.Controllers
     {
         private UserManager<User> userManager;
         private SignInManager<User> signInManager;
+        private UserContext context;
 
-        public UserController(UserManager<User> _userManager, SignInManager<User> _signInManager)
+        public UserController(UserManager<User> _userManager, SignInManager<User> _signInManager, UserContext _context)
         {
             userManager = _userManager;
             signInManager = _signInManager;
+            context = _context;
         }
 
         [HttpPost]
@@ -67,7 +71,9 @@ namespace CustomTrackerBackend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUser()
         {
-            return Ok(await userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)));
+            User user = await userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            user.Issues = context.Issues.Where(i => i.UserId == user.Id).ToList();
+            return Ok(user);
         }
 
     }

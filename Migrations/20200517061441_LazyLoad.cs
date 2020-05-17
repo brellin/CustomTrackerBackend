@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CustomTrackerBackend.Migrations
 {
-    public partial class init : Migration
+    public partial class LazyLoad : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -149,9 +149,9 @@ namespace CustomTrackerBackend.Migrations
                 {
                     id = table.Column<long>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(nullable: true),
+                    name = table.Column<string>(nullable: false),
                     is_complete = table.Column<bool>(nullable: false),
-                    user_id = table.Column<string>(nullable: true)
+                    user_id = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -161,7 +161,7 @@ namespace CustomTrackerBackend.Migrations
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

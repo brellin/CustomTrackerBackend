@@ -31,10 +31,12 @@ namespace CustomTrackerBackend.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnName("name")
                         .HasColumnType("text");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnName("user_id")
                         .HasColumnType("text");
 
@@ -257,7 +259,9 @@ namespace CustomTrackerBackend.Migrations
                     b.HasOne("CustomTrackerBackend.Models.User", "User")
                         .WithMany("Issues")
                         .HasForeignKey("UserId")
-                        .HasConstraintName("fk_issues_users_user_id");
+                        .HasConstraintName("fk_issues_users_user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
