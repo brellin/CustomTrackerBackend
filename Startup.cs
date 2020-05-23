@@ -1,19 +1,19 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using CustomTrackerBackend.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
-using CustomTrackerBackend.Models;
-using Microsoft.OpenApi.Models;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi.Models;
 using Npgsql;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 namespace CustomTrackerBackend
 {
@@ -61,19 +61,14 @@ namespace CustomTrackerBackend
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "Custom Tracker Backend",
-                Version = "v1",
-                Description = "Backend for Custom Tracker",
-                License = new OpenApiLicense
-                {
-                    Name = "Using MIT Open Source License",
-                    Url = new Uri("https://opensource.org/licenses/MIT"),
-                }
+                    Version = "v1",
+                    Description = "Backend for Custom Tracker",
+                    License = new OpenApiLicense
+                    {
+                        Name = "Using MIT Open Source License",
+                            Url = new Uri("https://opensource.org/licenses/MIT"),
+                    }
             }));
-            services
-                .AddIdentity<User, IdentityRole>()
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<UserContext>()
-                .AddDefaultTokenProviders();
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services
                 .AddAuthentication(options =>
