@@ -1,7 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using CustomTrackerBackend.Models;
+using CustomTracker.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 
-namespace CustomTrackerBackend
+namespace CustomTracker
 {
     public class Startup
     {

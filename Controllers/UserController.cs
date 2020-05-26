@@ -2,20 +2,20 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CustomTrackerBackend.Helpers;
-using CustomTrackerBackend.Models;
-using CustomTrackerBackend.Models.Inputs;
+using CustomTracker.Helpers;
+using CustomTracker.Models;
+using CustomTracker.Models.Inputs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace CustomTrackerBackend.Controllers
+namespace CustomTracker.Controllers
 {
     [ApiController]
     [Route("/auth/[action]")]
     public class UserController : ControllerBase
     {
-        private UserContext context;
+        private readonly UserContext context;
 
         public UserController(UserContext _context)
         {

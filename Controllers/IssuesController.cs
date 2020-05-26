@@ -1,25 +1,24 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CustomTrackerBackend.Models;
+using CustomTracker.Models;
+using CustomTracker.Models.Inputs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace CustomTrackerBackend
+namespace CustomTracker
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class IssuesController : ControllerBase
     {
         private readonly UserContext _context;
-        private UserManager<User> _userManager;
 
-        public IssuesController(UserContext context, UserManager<User> userManager)
+        public IssuesController(UserContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         // GET: api/Issues
@@ -86,11 +85,18 @@ namespace CustomTrackerBackend
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Issue>> PostIssue(Issue issue)
+        public async Task<ActionResult<Issue>> PostIssue(IssueInput input)
         {
+            Issue issue = new Issue()
+            {
+                Name = input.Name,
+                IsComplete = input.IsComplete,
+                Detail = input.Detail
+            };
             issue.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             _context.Issues.Add(issue);
             await _context.SaveChangesAsync();
+            issue.User = await _context.Users.FirstAsync(u => u.Id == issue.UserId);
 
             return CreatedAtAction(nameof(PostIssue), new { id = issue.Id }, new { issue });
         }

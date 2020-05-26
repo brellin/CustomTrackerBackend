@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using CustomTrackerBackend.Helpers;
-using CustomTrackerBackend.Models.Inputs;
+using CustomTracker.Helpers;
+using CustomTracker.Models.Inputs;
 using Microsoft.EntityFrameworkCore;
 
-namespace CustomTrackerBackend.Models
+namespace CustomTracker.Models
 {
     public class UserContext : DbContext
     {
