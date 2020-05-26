@@ -63,7 +63,7 @@ namespace CustomTrackerBackend.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id")
-                        .HasName("pk_user");
+                        .HasName("pk_users");
 
                     b.HasIndex("Username")
                         .IsUnique()
@@ -77,7 +77,7 @@ namespace CustomTrackerBackend.Migrations
                     b.HasOne("CustomTrackerBackend.Models.User", "User")
                         .WithMany("Issues")
                         .HasForeignKey("UserId")
-                        .HasConstraintName("fk_issues_user_user_id");
+                        .HasConstraintName("fk_issues_users_user_id");
                 });
 #pragma warning restore 612, 618
         }

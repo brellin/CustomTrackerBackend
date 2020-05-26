@@ -1,3 +1,12 @@
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using CustomTrackerBackend.Helpers;
+using CustomTrackerBackend.Models;
+using CustomTrackerBackend.Models.Inputs;
 using Microsoft.EntityFrameworkCore;
 
 namespace CustomTrackerBackend.Models
@@ -6,7 +15,7 @@ namespace CustomTrackerBackend.Models
     {
         public UserContext(DbContextOptions<UserContext> options) : base(options) { }
         public DbSet<Issue> Issues { get; set; }
-
+        public DbSet<User> Users { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -20,6 +29,28 @@ namespace CustomTrackerBackend.Models
                 .HasOne(i => i.User)
                 .WithMany(u => u.Issues)
                 .HasForeignKey(i => i.UserId);
+        }
+
+        public async Task<User> CreateUserAsync(LoginInput input)
+        {
+            string passwordHash = input.Password.HashPassword();
+            User fullUser = new User()
+            {
+                Username = input.Username,
+                PasswordHash = passwordHash
+            };
+            await AddAsync(fullUser);
+            await SaveChangesAsync();
+            return fullUser;
+        }
+
+        public async Task<User> SignInUser(LoginInput input)
+        {
+            string passwordHash = input.Password.HashPassword();
+            Console.WriteLine("\n" + passwordHash + "\n");
+            User match = await Users.FirstAsync(u => u.Username == input.Username);
+            if (match.PasswordHash.Equals(passwordHash)) return match;
+            else throw new Exception("Passwords do not match");
         }
     }
 }

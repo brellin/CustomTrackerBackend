@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CustomTrackerBackend.Migrations
 {
-    public partial class manual : Migration
+    public partial class ManPass : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,7 +17,7 @@ namespace CustomTrackerBackend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user", x => x.id);
+                    table.PrimaryKey("pk_users", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -34,7 +34,7 @@ namespace CustomTrackerBackend.Migrations
                 {
                     table.PrimaryKey("pk_issues", x => x.id);
                     table.ForeignKey(
-                        name: "fk_issues_user_user_id",
+                        name: "fk_issues_users_user_id",
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",

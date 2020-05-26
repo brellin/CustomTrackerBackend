@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -26,29 +27,29 @@ namespace CustomTrackerBackend.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await context.CreateUserAsync(input, input.Password);
-                return Ok(new { id = user.Id });
+                try
+                {
+                    User user = await context.CreateUserAsync(input);
+                    string token = user.GenerateToken();
+                    return Created(nameof(Register), new { id = user.Id, token = token });
+                }
+                catch (Exception exception) { return BadRequest(exception); }
             }
             return UnprocessableEntity(ModelState);
         }
 
-        // [HttpPost]
-        // public async Task<IActionResult> Login([FromBody] LoginInput input)
-        // {
-        //     if (ModelState.IsValid)
-        //     {
-        //         Microsoft.AspNetCore.Identity.SignInResult logInUser = await signInManager.PasswordSignInAsync(input.Username, input.Password, false, false);
-
-        //         if (logInUser.Succeeded)
-        //         {
-        //             User user = await userManager.FindByNameAsync(input.Username);
-        //             string token = TokenManager.GenerateToken(user);
-        //             return Ok(new { token = token });
-        //         }
-        //         return ValidationProblem($"Sign in with user \"{input.Username}\" failed");
-        //     }
-        //     return UnprocessableEntity(ModelState);
-        // }
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody] LoginInput input)
+        {
+            if (!ModelState.IsValid) return UnprocessableEntity(ModelState);
+            try
+            {
+                User user = await context.SignInUser(input);
+                string token = user.GenerateToken();
+                return Ok(new { token = token });
+            }
+            catch (Exception exception) { return ValidationProblem(exception.Message); }
+        }
 
         // [Authorize]
         // [HttpGet]
