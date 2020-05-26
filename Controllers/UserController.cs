@@ -53,7 +53,7 @@ namespace CustomTrackerBackend.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> User()
+        public async Task<IActionResult> Me()
         {
             User user = await context.Users.FirstAsync(u => u.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
             user.Issues = context.Issues.Where(i => i.UserId == user.Id).ToList();
