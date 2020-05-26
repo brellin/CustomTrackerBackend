@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CustomTracker.Models;
@@ -46,13 +48,9 @@ namespace CustomTracker
         public async Task<ActionResult<Issue>> GetIssue(long id)
         {
             Issue issue = await _context.Issues.Include(i => i.User).FirstAsync(i => i.Id == id);
-
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             if (issue == null) return NotFound("This issue does not exist");
-
             if (userId != issue.UserId) return Unauthorized(new { error = "You are not authorized to view this issue" });
-
             return Ok(issue);
         }
 
@@ -61,23 +59,23 @@ namespace CustomTracker
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutIssue(long id, Issue issue)
+        public async Task<IActionResult> PutIssue(long id, IssueInput input)
         {
-            if (id != issue.Id) return BadRequest("Issue ID does not match route ID");
-
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            Issue issueMatch = await _context.Issues.FindAsync(id);
-
+            Issue issueMatch = await _context.Issues.FirstAsync(i => i.Id == id);
             if (issueMatch == null) return NotFound(new { error = "This issue does not exist" });
-
             if (issueMatch.UserId != userId) return Unauthorized(new { error = "You are not authorized to edit this issue" });
-
-            _context.Entry(issue).State = EntityState.Modified;
-
+            foreach (var field in typeof(Issue).GetProperties())
+            {
+                try
+                {
+                    var fieldMatch = typeof(IssueInput).GetProperties().First(f => f.Name == field.Name).GetValue(input);
+                    if (fieldMatch != null) field.SetValue(issueMatch, fieldMatch);
+                }
+                catch (Exception) { }
+            }
             await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok(issueMatch);
         }
 
         // POST: api/Issue
