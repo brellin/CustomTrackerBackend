@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace CustomTrackerBackend.Models
 {
@@ -12,6 +13,8 @@ namespace CustomTrackerBackend.Models
             set { guid = value; }
         }
         public string Username { get; set; }
+
+        [JsonIgnore]
         public string PasswordHash { get; set; }
         public virtual List<Issue> Issues { get; set; }
     }

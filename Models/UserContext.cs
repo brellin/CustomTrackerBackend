@@ -1,11 +1,6 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using CustomTrackerBackend.Helpers;
-using CustomTrackerBackend.Models;
 using CustomTrackerBackend.Models.Inputs;
 using Microsoft.EntityFrameworkCore;
 

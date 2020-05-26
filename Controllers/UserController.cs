@@ -6,8 +6,8 @@ using CustomTrackerBackend.Helpers;
 using CustomTrackerBackend.Models;
 using CustomTrackerBackend.Models.Inputs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CustomTrackerBackend.Controllers
 {
@@ -51,14 +51,14 @@ namespace CustomTrackerBackend.Controllers
             catch (Exception exception) { return ValidationProblem(exception.Message); }
         }
 
-        // [Authorize]
-        // [HttpGet]
-        // public async Task<IActionResult> GetUser()
-        // {
-        //     User user = await userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-        //     user.Issues = context.Issues.Where(i => i.UserId == user.Id).ToList();
-        //     return Ok(user);
-        // }
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> User()
+        {
+            User user = await context.Users.FirstAsync(u => u.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            user.Issues = context.Issues.Where(i => i.UserId == user.Id).ToList();
+            return Ok(user);
+        }
 
     }
 }
