@@ -1,12 +1,10 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CustomTracker.Models;
 using CustomTracker.Models.Inputs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,16 +27,12 @@ namespace CustomTracker
         public async Task<ActionResult> GetIssues()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             var userIssues = _context.Issues
                 .Include(i => i.User)
                 .AsEnumerable()
                 .Where(i => i.User.Id == userId);
-
             if (userIssues.Count() < 1) return NotFound(new { message = "Good request, but no issues found" });
-
             await Task.Delay(500);
-
             return Ok(new { issues = userIssues });
         }
 
@@ -106,14 +100,10 @@ namespace CustomTracker
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Issue issue = await _context.Issues.FindAsync(id);
-
             if (issue == null) return NotFound(new { error = "This issue does not exist" });
-
             if (userId != issue.UserId) return Unauthorized(new { error = "You are not authorized to delete this issue" });
-
             _context.Issues.Remove(issue);
             await _context.SaveChangesAsync();
-
             return issue;
         }
     }

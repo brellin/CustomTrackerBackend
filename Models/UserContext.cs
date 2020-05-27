@@ -42,7 +42,6 @@ namespace CustomTracker.Models
         public async Task<User> SignInUser(LoginInput input)
         {
             string passwordHash = input.Password.HashPassword();
-            Console.WriteLine("\n" + passwordHash + "\n");
             User match = await Users.FirstAsync(u => u.Username == input.Username);
             if (match.PasswordHash.Equals(passwordHash)) return match;
             else throw new Exception("Passwords do not match");
