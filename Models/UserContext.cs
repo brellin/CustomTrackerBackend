@@ -42,9 +42,18 @@ namespace CustomTracker.Models
         public async Task<User> SignInUser(LoginInput input)
         {
             string passwordHash = input.Password.HashPassword();
-            User match = await Users.FirstAsync(u => u.Username == input.Username);
-            if (match.PasswordHash.Equals(passwordHash)) return match;
-            else throw new Exception("Passwords do not match");
+            try
+            {
+                User match = await Users.FirstAsync(u => u.Username == input.Username);
+                bool passwordsMatch = match.PasswordHash.Equals(passwordHash);
+                if (passwordsMatch) return match;
+                else throw new Exception("Passwords do not match");
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "Passwords do not match") throw ex;
+                throw new Exception($"User '{input.Username}' does not exist");
+            }
         }
     }
 }
