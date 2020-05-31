@@ -55,10 +55,12 @@ namespace CustomTracker.Controllers
         [HttpGet]
         public async Task<IActionResult> Me()
         {
-            User user = await context.Users.FirstAsync(u => u.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
-            user.Issues = context.Issues.Where(i => i.UserId == user.Id).ToList();
-            return Ok(user);
+                // Get user's id
+                User user = await context.Users.FirstAsync(u => u.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
+                // Get user matching id
+                user.Issues = context.Issues.Where(i => i.UserId == user.Id).ToList();
+                // Return matching user
+                return Ok(user);
         }
-
     }
 }
