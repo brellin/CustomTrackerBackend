@@ -17,10 +17,7 @@ namespace CustomTracker.Controllers
     {
         private readonly UserContext context;
 
-        public UserController(UserContext _context)
-        {
-            context = _context;
-        }
+        public UserController(UserContext _context) { context = _context; }
 
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] LoginInput input)
@@ -55,12 +52,16 @@ namespace CustomTracker.Controllers
         [HttpGet]
         public async Task<IActionResult> Me()
         {
+            try
+            {
                 // Get user's id
                 User user = await context.Users.FirstAsync(u => u.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
                 // Get user matching id
                 user.Issues = context.Issues.Where(i => i.UserId == user.Id).ToList();
                 // Return matching user
                 return Ok(user);
+            }
+            catch (Exception exception) { return ValidationProblem(exception.Message); }
         }
     }
 }
