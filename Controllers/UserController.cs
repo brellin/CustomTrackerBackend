@@ -43,7 +43,7 @@ namespace CustomTracker.Controllers
             {
                 User user = await context.SignInUser(input);
                 string token = user.GenerateToken();
-                return Ok(new { token = token });
+                return Ok(new { token = token, user = user });
             }
             catch (Exception exception) { return ValidationProblem(exception.Message); }
         }
