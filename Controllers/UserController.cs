@@ -28,7 +28,7 @@ namespace CustomTracker.Controllers
                 {
                     User user = await context.CreateUserAsync(input);
                     string token = user.GenerateToken();
-                    return Created(nameof(Register), new { id = user.Id, token = token });
+                    return Created(nameof(Register), new { token = token, user = user });
                 }
                 catch (Exception exception) { return BadRequest(exception); }
             }
