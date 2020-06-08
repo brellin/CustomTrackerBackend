@@ -143,7 +143,7 @@ namespace CustomTrackerBackend
             }
             catch (Exception err)
             {
-                if (err.Source == "System.Linq") return NotFound($"Issue with id '{id}' does not exist");
+                if (err.Source == "Microsoft.EntityFrameworkCore") return NotFound($"Issue with id '{id}' does not exist");
                 return StatusCode(500, err);
             }
         }

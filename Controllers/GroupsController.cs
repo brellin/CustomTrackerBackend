@@ -113,7 +113,7 @@ namespace CustomTrackerBackend.Controllers
             }
             catch (Exception err)
             {
-                if (err.Source == "System.Linq") return NotFound($"Group with id '{id}' does not exist");
+                if (err.Source == "Microsoft.EntityFrameworkCore") return NotFound($"Group with id '{id}' does not exist");
                 return StatusCode(500, err);
             }
         }
