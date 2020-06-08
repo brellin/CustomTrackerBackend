@@ -51,13 +51,13 @@ namespace CustomTrackerBackend.Controllers
             }
             catch (Exception err)
             {
-                if (err.Source == "System.Linq") return NotFound($"Group with id of '{id}' does not exist");
+                if (err.Source == "System.Linq") return NotFound($"Group with id '{id}' does not exist");
                 return StatusCode(500, err);
             }
         }
 
         // POST groups
-        [HttpPost("")]
+        [HttpPost]
         public async Task<ActionResult<Group>> PostGroup(Group group)
         {
             if (!ModelState.IsValid) return UnprocessableEntity("Must include name");
@@ -93,7 +93,7 @@ namespace CustomTrackerBackend.Controllers
             }
             catch (Exception err)
             {
-                if (err.Source == "System.Linq") return NotFound($"Group with id of '{id}' does not exist");
+                if (err.Source == "System.Linq") return NotFound($"Group with id '{id}' does not exist");
                 return StatusCode(500, err);
             }
         }
@@ -113,7 +113,7 @@ namespace CustomTrackerBackend.Controllers
             }
             catch (Exception err)
             {
-                if (err.Source == "System.Linq") return NotFound($"Group with id of '{id}' does not exist");
+                if (err.Source == "System.Linq") return NotFound($"Group with id '{id}' does not exist");
                 return StatusCode(500, err);
             }
         }
