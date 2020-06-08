@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace CustomTracker.Migrations
+namespace CustomTrackerBackend.Migrations
 {
     public partial class ManPass : Migration
     {

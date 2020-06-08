@@ -1,14 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CustomTracker.Models;
-using CustomTracker.Models.Inputs;
+using CustomTrackerBackend.Models;
+using CustomTrackerBackend.Models.Inputs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace CustomTracker
+namespace CustomTrackerBackend
 {
     [Route("[controller]")]
     [ApiController]
@@ -16,19 +17,17 @@ namespace CustomTracker
     {
         private readonly UserContext _context;
 
-        public IssuesController(UserContext context)
-        {
-            _context = context;
-        }
+        public IssuesController(UserContext context) { _context = context; }
 
         // GET: api/Issues
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult> GetIssues()
+        public async Task<IActionResult> GetIssues()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userIssues = _context.Issues
                 .Include(i => i.User)
+                .Include(i => i.Group)
                 .AsEnumerable()
                 .Where(i => i.User.Id == userId);
             if (userIssues.Count() < 1) return NotFound(new { message = "Good request, but no issues found" });
@@ -39,7 +38,7 @@ namespace CustomTracker
         // GET: api/Issue/5
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Issue>> GetIssue(long id)
+        public async Task<IActionResult> GetIssue(long id)
         {
             Issue issue = await _context.Issues.Include(i => i.User).FirstAsync(i => i.Id == id);
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -77,26 +76,36 @@ namespace CustomTracker
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Issue>> PostIssue(IssueInput input)
+        public async Task<ActionResult<IEnumerable<Issue>>> PostIssue(IssueInput input)
         {
+            string username = User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (input.Group == null) input.Group = username.ToString();
+            bool groupExists = _context.Groups.Any(g => g.Name == input.Group);
+            if (!groupExists)
+            {
+                _context.Groups.Add(new Group() { Name = input.Group, OwnerId = userId });
+                _context.SaveChanges();
+            }
+            Group group = _context.Groups.First(g => g.Name == input.Group);
             Issue issue = new Issue()
             {
                 Name = input.Name,
                 IsComplete = input.IsComplete,
-                Detail = input.Detail
+                Detail = input.Detail,
+                GroupId = group.Id
             };
-            issue.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            issue.UserId = userId;
             _context.Issues.Add(issue);
             await _context.SaveChangesAsync();
             issue.User = await _context.Users.FirstAsync(u => u.Id == issue.UserId);
-
             return CreatedAtAction(nameof(PostIssue), new { id = issue.Id }, new { issue });
         }
 
         // DELETE: api/Issue/5
         [Authorize]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Issue>> DeleteIssue(long id)
+        public async Task<IActionResult> DeleteIssue(long id)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Issue issue = await _context.Issues.FindAsync(id);
@@ -104,7 +113,7 @@ namespace CustomTracker
             if (userId != issue.UserId) return Unauthorized(new { error = "You are not authorized to delete this issue" });
             _context.Issues.Remove(issue);
             await _context.SaveChangesAsync();
-            return issue;
+            return Ok();
         }
     }
 }

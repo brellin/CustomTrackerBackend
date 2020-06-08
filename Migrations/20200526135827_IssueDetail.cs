@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace CustomTracker.Migrations
+namespace CustomTrackerBackend.Migrations
 {
     public partial class IssueDetail : Migration
     {

@@ -3,10 +3,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using CustomTracker.Models;
+using CustomTrackerBackend.Models;
 using Microsoft.IdentityModel.Tokens;
 
-namespace CustomTracker.Helpers
+namespace CustomTrackerBackend.Helpers
 {
     public static class ExtensionMethods
     {

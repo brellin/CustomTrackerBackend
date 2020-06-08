@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace CustomTracker.Models
+namespace CustomTrackerBackend.Models
 {
     public class User
     {
@@ -16,6 +16,7 @@ namespace CustomTracker.Models
 
         [JsonIgnore]
         public string PasswordHash { get; set; }
+        public virtual List<Group> Groups { get; set; }
         public virtual List<Issue> Issues { get; set; }
     }
 }

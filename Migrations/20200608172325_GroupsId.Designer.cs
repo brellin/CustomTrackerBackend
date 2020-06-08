@@ -2,15 +2,17 @@
 using CustomTrackerBackend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CustomTrackerBackend.Migrations
 {
     [DbContext(typeof(UserContext))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    [Migration("20200608172325_GroupsId")]
+    partial class GroupsId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,7 +29,6 @@ namespace CustomTrackerBackend.Migrations
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnName("name")
                         .HasColumnType("text");
 
@@ -37,10 +38,6 @@ namespace CustomTrackerBackend.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_groups");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasName("ix_groups_name");
 
                     b.HasIndex("OwnerId")
                         .HasName("ix_groups_owner_id");
@@ -69,7 +66,6 @@ namespace CustomTrackerBackend.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnName("name")
                         .HasColumnType("text");
 

@@ -2,14 +2,14 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using CustomTracker.Helpers;
-using CustomTracker.Models;
-using CustomTracker.Models.Inputs;
+using CustomTrackerBackend.Helpers;
+using CustomTrackerBackend.Models;
+using CustomTrackerBackend.Models.Inputs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace CustomTracker.Controllers
+namespace CustomTrackerBackend.Controllers
 {
     [ApiController]
     [Route("/auth/[action]")]
@@ -54,10 +54,12 @@ namespace CustomTracker.Controllers
         {
             try
             {
-                // Get user's id
+                // Get user matching user's id
                 User user = await context.Users.FirstAsync(u => u.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
-                // Get user matching id
+                // populate Issues matching user's id
                 user.Issues = context.Issues.Where(i => i.UserId == user.Id).ToList();
+                // populate Groups matching user's id
+                user.Groups = context.Groups.Where(g => g.OwnerId == user.Id).ToList();
                 // Return matching user
                 return Ok(user);
             }

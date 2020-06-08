@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CustomTracker.Models.Inputs
+namespace CustomTrackerBackend.Models.Inputs
 {
     public class LoginInput
     {

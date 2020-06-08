@@ -1,4 +1,4 @@
-namespace CustomTracker.Models.Inputs
+namespace CustomTrackerBackend.Models.Inputs
 {
     public class IssueInput
     {
@@ -7,5 +7,7 @@ namespace CustomTracker.Models.Inputs
         public bool IsComplete { get; set; }
 
         public string Detail { get; set; }
+
+        public string Group { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using CustomTracker.Models;
+using CustomTrackerBackend.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 
-namespace CustomTracker
+namespace CustomTrackerBackend
 {
     public class Startup
     {
@@ -54,8 +54,10 @@ namespace CustomTracker
             services.AddDbContext<UserContext>(options => options.UseNpgsql(pgConnection).UseSnakeCaseNamingConvention());
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
-                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-                );
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                });
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "Custom Tracker Backend",

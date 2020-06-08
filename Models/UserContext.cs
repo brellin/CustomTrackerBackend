@@ -1,16 +1,17 @@
 using System;
 using System.Threading.Tasks;
-using CustomTracker.Helpers;
-using CustomTracker.Models.Inputs;
+using CustomTrackerBackend.Helpers;
+using CustomTrackerBackend.Models.Inputs;
 using Microsoft.EntityFrameworkCore;
 
-namespace CustomTracker.Models
+namespace CustomTrackerBackend.Models
 {
     public class UserContext : DbContext
     {
         public UserContext(DbContextOptions<UserContext> options) : base(options) { }
         public DbSet<Issue> Issues { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Group> Groups { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -24,6 +25,19 @@ namespace CustomTracker.Models
                 .HasOne(i => i.User)
                 .WithMany(u => u.Issues)
                 .HasForeignKey(i => i.UserId);
+            modelBuilder.Entity<Issue>()
+                .HasOne(i => i.Group)
+                .WithMany(g => g.Issues)
+                .HasForeignKey(i => i.GroupId);
+            modelBuilder.Entity<Group>()
+                .HasKey(g => g.Id);
+            modelBuilder.Entity<Group>()
+                .HasIndex(g => g.Name)
+                .IsUnique();
+            modelBuilder.Entity<Group>()
+                .HasOne(g => g.Owner)
+                .WithMany(u => u.Groups)
+                .HasForeignKey(g => g.OwnerId);
         }
 
         public async Task<User> CreateUserAsync(LoginInput input)
