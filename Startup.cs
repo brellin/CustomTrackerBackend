@@ -67,7 +67,8 @@ namespace CustomTrackerBackend
                     {
                         Name = "Using MIT Open Source License",
                             Url = new Uri("https://opensource.org/licenses/MIT"),
-                    }
+                    },
+                    Contact = new OpenApiContact()
             }));
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services
