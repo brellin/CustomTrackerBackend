@@ -46,7 +46,10 @@ namespace CustomTrackerBackend
         {
             try
             {
-                Issue issue = await _context.Issues.Include(i => i.User).FirstAsync(i => i.Id == id);
+                Issue issue = await _context.Issues
+                    .Include(i => i.User)
+                    .Include(i => i.Group)
+                    .FirstAsync(i => i.Id == id);
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (issue == null) return NotFound("This issue does not exist");
                 if (userId != issue.UserId) return Unauthorized(new { error = "You are not authorized to view this issue" });
