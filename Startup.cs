@@ -39,7 +39,9 @@ namespace CustomTrackerBackend
             }
             else
             {
+                Console.WriteLine("\n" + Configuration["DATABASE_URL"] + "\n");
                 Uri dbUrl = new Uri(Configuration["DATABASE_URL"]);
+                Console.WriteLine("\n" + dbUrl.ToString() + "\n");
                 string[] userInfo = dbUrl.UserInfo.Split(":");
                 conn.Add("User Id", userInfo[0]);
                 conn.Add("Password", userInfo[1]);
